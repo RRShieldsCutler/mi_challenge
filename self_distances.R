@@ -4,7 +4,7 @@ library(ggplot2)
 unifrac <- read.delim('../../data/prok/beta_diversity/unweighted_unifrac_distance_matrix.txt', header = T, row.names = 1, check.names = F)
 unifrac <- unifrac[sort(rownames(unifrac)),sort(rownames(unifrac))]
 map <- read.delim('../../data/metadata_vlavage.txt', header=T, check.names = F)
-map$rel_exp_day <- map$exp_day - 2
+map$rel_exp_day <- map$exp_day - 1
 rownames(map) <- map$sampleid
 map <- map[rownames(unifrac),]
 mouse.ids <- as.character(unique(map$mouse))
@@ -42,7 +42,7 @@ ggsave('../../results/distance_self_splines_unweighted_unifrac.png', height = 4,
 unifrac <- read.delim('../../data/prok/beta_diversity/unweighted_unifrac_distance_matrix.txt', header = T, row.names = 1, check.names = F)
 unifrac <- unifrac[sort(rownames(unifrac)),sort(rownames(unifrac))]
 map <- read.delim('../../data/metadata_vlavage.txt', header=T, check.names = F)
-map$rel_exp_day <- map$exp_day - 2
+map$rel_exp_day <- map$exp_day - 1
 rownames(map) <- map$sampleid
 map <- map[rownames(unifrac),]
 mouse.ids <- as.character(unique(map$mouse))
@@ -59,21 +59,24 @@ for (mx in 1:length(mouse.ids)) {
   self.dist.mx$rel_exp_day <- as.numeric(map[map$mouse==mouse.ids[mx],]$rel_exp_day)[2:length(mouse.x)]
   self.dist.mx$trx <- as.character(map[map$mouse==mouse.ids[mx],]$treatment)[1]
   mx.distances <- diag(as.matrix(unifrac[mouse.x[1:(length(mouse.x)-1)], mouse.x[2:length(mouse.x)]]))
-  dist.1 <- mx.distances[1]
-  mx.distances <- unlist(lapply(X = mx.distances, FUN = function(xx) xx - dist.1))
+  # dist.1 <- mx.distances[1]
+  # mx.distances <- unlist(lapply(X = mx.distances, FUN = function(xx) xx - dist.1))
   self.dist.mx$dist <- as.numeric(mx.distances)
   self.distances <- rbind(self.distances, self.dist.mx)
 }
 
 ggplot(self.distances, aes(x=rel_exp_day, y=dist, group=mouse, color=trx)) +
   geom_line() +
-  theme_classic() + labs(x="experiment day relative to first sensitization", y="relative distance to previous sample") +
+  theme_classic() + labs(x="experiment day relative to first sensitization", y="distance to previous sample") +
   scale_color_manual(name='Treatment', values=c('red','blue'))
-ggsave('../../results/distance_self_unweighted_unifrac.png', height = 4, width = 5, dpi=300)
+ggsave('../../results/distance_self_unweighted_unifrac2.png', height = 4, width = 5, dpi=300)
 
 
 ggplot(self.distances, aes(x=rel_exp_day, y=dist, group=trx)) +
   geom_smooth(aes(color=trx)) +
   theme_classic() + labs(x="experiment day relative to first sensitization", y="relative distance to previous sample") +
   scale_color_manual(name='Treatment', values=c('red','blue'))
-ggsave('../../results/distance_self_splines_unweighted_unifrac.png', height = 4, width = 5, dpi=300)
+ggsave('../../results/distance_self_splines_unweighted_unifrac2.png', height = 4, width = 5, dpi=300)
+
+
+

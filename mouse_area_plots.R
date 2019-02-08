@@ -5,7 +5,7 @@ library(reshape2)
 library(vegan)
 library(ggplot2)
 
-otu.L3 <- read.delim('../../data/prok/otu_table_L3.txt', header=T, check.names = F, row.names = 1, skip = 1)
+otu.L3 <- read.delim('../../data/prok/otu_table_L4.txt', header=T, check.names = F, row.names = 1, skip = 1)
 map <- read.delim('../../data/metadata_vlavage.txt', header=T, check.names = F)
 
 mouse.ids <- as.character(unique(map$mouse))
@@ -32,14 +32,17 @@ for (m in 1:length(mouse.ids)) {
   ranked = order(apply(meanAb, 2, max),decreasing=T)
   otu.m = otu.m[ranked, ]
   
-  rownames(otu.m) <- lapply(X = rownames(otu.m), FUN = function(xx) strsplit(as.character(xx), ';', fixed = T)[[1]][3])
+
   Taxa = rownames(otu.m)
   lim = 20
   if (nrow(otu.m) > lim) Taxa[lim:nrow(otu.m)] = "Other"
   otu.m = rowsum(otu.m, Taxa)
   byAbundance = rownames(otu.m)[order(rowMeans(otu.m), decreasing=T)]
   #byAbundance = gsub(';','.',byAbundance)
-  
+
+  rownames(otu.m) <- lapply(X = rownames(otu.m),
+                            FUN = function(xx) strsplit(as.character(xx), ';', fixed = T)[[1]][4])
+  rownames(otu.m) <- gsub("NA","other",rownames(otu.m))
   otu.m <- data.frame(t(otu.m), check.names=F)      # flip table
   otu.m$sampleid <- rownames(otu.m)  # add a column for the sample IDs
   rownames(map.t) <- map.t$sampleid      # add a column for the sample IDs
@@ -76,7 +79,7 @@ for (m in 1:length(mouse.ids)) {
   otu.m.area$exp_day_n <- as.numeric(otu.m$exp_day)
   ggplot(otu.m.area, aes(x = exp_day_n, y = RelativeAbundance, fill = Taxa)) +
     geom_area(stat ="identity") + labs(x="experiment day",y="root relative abundance") +
-    guides(fill=guide_legend(ncol=1)) + scale_x_continuous() +
+    guides(fill=guide_legend(ncol=1)) + scale_x_continuous(limits = c(0,21)) +
     scale_fill_manual(values=c("dodgerblue2","#E31A1C", # red # Kevin Wright
                                "green4",
                                "#6A3D9A", # purple
@@ -91,5 +94,5 @@ for (m in 1:length(mouse.ids)) {
                                "darkturquoise","green1","yellow4","yellow3",
                                "darkorange4","brown")) +
     theme_classic() + theme(axis.text = element_text(color="black"))
-  ggsave(filename = paste0("../../results/mouse_plots_by_animal_",mouse.ids[m],"_L3.png"), height = 6, width = 7, dpi = 300)
+  ggsave(filename = paste0("../../results/mouse_plots_by_animal_",mouse.ids[m],"_L4.png"), height = 6, width = 7, dpi = 300)
 }
