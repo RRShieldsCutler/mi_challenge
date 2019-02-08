@@ -68,14 +68,16 @@ for (mx in 1:length(mouse.ids)) {
 ggplot(self.distances, aes(x=rel_exp_day, y=dist, group=mouse, color=trx)) +
   geom_line() +
   theme_classic() + labs(x="experiment day relative to first sensitization", y="distance to previous sample") +
-  scale_color_manual(name='Treatment', values=c('red','blue'))
+  scale_color_manual(name='Treatment', values=c('red','blue')) +
+  theme(axis.text = element_text(color='black'))
 ggsave('../../results/distance_self_unweighted_unifrac2.png', height = 4, width = 5, dpi=300)
 
 
 ggplot(self.distances, aes(x=rel_exp_day, y=dist, group=trx)) +
   geom_smooth(aes(color=trx)) +
   theme_classic() + labs(x="experiment day relative to first sensitization", y="relative distance to previous sample") +
-  scale_color_manual(name='Treatment', values=c('red','blue'))
+  scale_color_manual(name='Treatment', values=c('red','blue')) +
+  theme(axis.text = element_text(color='black'))
 ggsave('../../results/distance_self_splines_unweighted_unifrac2.png', height = 4, width = 5, dpi=300)
 
 
